@@ -18,6 +18,9 @@ app.use(express.static('public'))
 const UserRoutes = require('./routes/UserRoutes')
 app.use('/users', UserRoutes)
 
+const ExpenseRoutes = require('./routes/ExpenseRoutes')
+app.use('/expense', ExpenseRoutes)
+
 conn
     //.sync({force: true})
     .sync()

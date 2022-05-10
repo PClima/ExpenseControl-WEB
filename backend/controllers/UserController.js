@@ -1,10 +1,12 @@
 const bcrypt = require('bcrypt')
 const Users = require('../models/Users')
+const Expenses = require('../models/Expenses')
 const jwt = require('jsonwebtoken')
 
 const createUserToken = require('../helpers/createUserToken')
 const getToken = require('../helpers/getToken')
 const getUserByToken = require('../helpers/getUserByToken')
+const deleteImage = require('../helpers/delete-upload')
 
 module.exports = class UserController {
 
@@ -188,7 +190,6 @@ module.exports = class UserController {
         }
 
         try {
-            console.log(user)
             // returns user updated data
             await Users.update(user, {where: {id: user.id}})
 
@@ -198,5 +199,37 @@ module.exports = class UserController {
             res.status(500).json({message: err})
             return
         }
+    }
+
+    static async deleteUser(req, res){
+        const token = getToken(req)
+        const user = await getUserByToken(token)
+        const UserId = user.id
+        const id = req.params.id
+        const filePath = await Expenses.findAll({where : {UserId : UserId}})
+
+        let expenseIds = []
+
+        filePath.map((item) => {
+            expenseIds.push(item.id)
+        })
+
+        filePath.map((item) => {
+            deleteImage("../backend/public/images/expenses/"+item.billet)
+        })
+        filePath.map((item) => {
+            deleteImage("../backend/public/images/expenses/"+item.receipt)
+        })
+        
+        const users = await Users.destroy({where : {id:id}})
+
+        if(!users){
+            res.status(422).json({message: "Fail to delete user!"})
+            return
+        }
+        
+        await Expenses.destroy({where : {UserId : UserId}, force: true})
+
+        res.status(200).json({ message: "User deleted!" })
     }
 }

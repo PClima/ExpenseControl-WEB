@@ -9,11 +9,15 @@ const Expenses = db.define("Expenses", {
         type: DataTypes.STRING,
         require: true,
     },
+    description: {
+        type: DataTypes.STRING,
+        require: true,
+    },
     value: {
         type: DataTypes.DOUBLE,
         require: true,
     },
-    paid: {
+    isPaid: {
         type: DataTypes.BOOLEAN,
         require: true,
     },
@@ -21,13 +25,17 @@ const Expenses = db.define("Expenses", {
         type: DataTypes.DATE,
         require: true,
     },
+    billet: {
+        type: DataTypes.STRING,
+        require: false,
+    },
     receipt: {
         type: DataTypes.STRING,
         require: false,
     }
 })
 
-Expenses.belongsTo(Users)
+Expenses.belongsTo(Users, {onDelete: 'cascade'})
 Users.hasMany(Expenses)
 
 module.exports = Expenses

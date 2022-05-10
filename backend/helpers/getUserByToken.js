@@ -12,7 +12,7 @@ const getUserByToken = async(token) =>{
     const userId = decoded.id
 
     const user = await User.findOne({raw: true, where: {id: userId}})
-    console.log(user.name)
+    //console.log(user.name)
     return user
 }
 
